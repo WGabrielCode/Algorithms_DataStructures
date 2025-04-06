@@ -1,0 +1,1 @@
+#czy cykl sklada sie z 4 wierzcholkow ( zlozonosc do 3 )

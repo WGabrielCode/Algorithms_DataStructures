@@ -1,20 +1,27 @@
 # z kazdego mozna do niego dojsc a zniego nie da sie wyjsc na macierzy
+def stream( G ) :
+	n = len( G )
+	candidate = 0
 
-def steam( G , ) :
-	n = len(  G )
-	cnt_1 = 0
-	for i in range( n ) :
-		for j in range( n ) :
-			if G[i][j] == 1 :
-				cnt_1 += 1
+	for v in range( 1, n ) :
+		if G[ candidate ][ v ] == 1 :
+			candidate = v
 
-G = [ [ 0 , 1 , 1 , 1 ] ,
-	  [ 0, 0 , 0 , 0 ] ,
-	  [ 1 , 1 , 0 , 0 ] ,
-	  [ 1 , 1 , 0 , 0 ]  ]
+	for v in range( n ) :
+		if G[ candidate ][ v ] == 1 :
+			return None
 
-G2 = [ [ 0 , 1 , 1 , 1 ] ,
-	  [ 1, 0 , 0 , 0 ] ,
-	  [ 0 , 1 , 0 , 0 ] ,
-	  [ 1 , 1 , 0 , 0 ]  ]
 
+	for v in range( n ) :
+		if v != candidate and G[ v ][ candidate ] == 0 :
+			return None
+
+	return candidate
+
+
+G1 = [ [ 0, 1, 1, 1 ], [ 0, 0, 0, 0 ], [ 1, 1, 0, 0 ], [ 1, 1, 0, 0 ] ]
+
+G2 = [ [ 0, 1, 1, 1 ], [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 1, 1, 0, 0 ] ]
+
+print( stream( G1 ) )
+print( stream( G2 ) ) # Powinno zwrócić None

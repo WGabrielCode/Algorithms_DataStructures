@@ -21,6 +21,7 @@ pallete = [ '#0d2b45',  # 0
             '#ffecd6'  # 7
             ]
 
+
 lines_color = pallete[ 0 ]
 X_color = pallete[ 4 ]
 O_color = pallete[ 6 ]
@@ -30,6 +31,7 @@ button_out_color = pallete[ 5 ]
 button_in_color = pallete[ 1 ]
 button_text_color = pallete[ 5 ]
 button_hover_color = pallete[ 2 ]
+
 
 # Background
 BG = pygame.Surface( (screen_width, screen_height) )
@@ -65,31 +67,56 @@ def board_values() :
 
 
 class Tile :
-	def __init__( self, origin_symbol, origin_rect ) :
+	def __init__( self , symbol, x , y , size , X_image , O_image , tile_image ) :
 		# Core attributes
-		self.type = origin_symbol
+		self.x_image = X_image
+		self.o_image = O_image
+		self.rect = pygame.rect( x , y , ( size , size ) )
+		self.type = symbol
 		self.marked = False
-		self.rect = origin_rect
-		self.scale = 0.8  # Scale of symbol
-		self.load_images()
-		self.resize_image()
+		self.left_x = x
+		self.top_y = y
+		self.size = size
+
+	""" 
+	def laod_tile( self ):
+		self.tile_image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
+		resize_tile()
 
 	def load_image( self ) :
 		if self.type == "x" :
 			self.symbol_image = pygame.image.load( "files/X_500px.png" ).convert_alpha()
 		else :
 			self.symbol_image = pygame.image.load( "files/O_500px.png" ).convert_alpha()
-
+		resize_image()
 	# if trans_factor != 1 :
 	#	image.set_alpha( 255 * trans_factor )
 
-	def resize( self ) :
+	def resize_OX( self ) :
 		target_size = int( (self.rect.width) * self.scale )
 		self.image = pygame.transform.smoothscale( self.symbol_image, (target_size, target_size) )
 
+	def resize_tile( self ):
+		target_size =   (int( self.rect.width ) * self.scale  )
+		self.image = target.transform.smoothscale( self.symbol_image , ( target_size , target_size ) )
+
+	def combine( self , rect1 , rect2 ) :
+			rect1 = pygame.union
+	
+	def
+	"""
+	def check_click( self ):
+
+	def update_size( self ):
+
 	def draw( self ) :
-		image_rect = self.image.get_rect( center = self.rect.center )
-		screen.blit( self.image, image_rect )
+		screen.blit( self.tile_image , self.rect  )
+		if self.marked :
+			if self.type  == 'x' :
+				image = self.x_image
+			elif self.type = 'o' :
+				image = self.o_image
+			screen.blit( image , self.rect )
 
 	""" 
 	def check_hover( self , transparency_factor ) :
@@ -106,7 +133,6 @@ class Tile :
 			self.marked = False
 		return False
 	"""
-
 
 # text , w , h , pos , elevation )
 class Button :
@@ -160,30 +186,73 @@ class Button :
 			self.pressed = False
 		return False
 
+def image_resize( image_a , image_b ,image_c , size ) :
+	global screen_width, screen_height
+	image_a = pygame.transform.smoothscale( image_a, ( size , size ) )
+	image_b = pygame.transform.smoothscale( image_b, (size, size) )
+	image_c = pygame.transform.smoothscale( image_c, (size, size) )
+	return image_a , image_b , image_c
 
-def make_board( available_w, available_h ) :
+def make_board( image ) :
+	global screen_width , screen_height
 	margin = 20
-	tile_size = min( available_h, available_w ) // 3 - margin * 2
+	tile_size = min( screen_height, screen_width ) // 3
+	image = pygame.transform.smoothscale( image, (tile_size, tile_size) )
+	board = []
 	for row in range( 3 ) :
-		board_col = [ ]
+		board_row = [ ]
 		for col in range( 3 ) :
-			board_row = [ ]
-			correct_x = margin + col * tile_size
-			correct_y = margin + row * tile_size
-			image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
-			image = pygame.transform.smoothscale( image, (tile_size, tile_size) )
+			correct_x = (screen_width - 3 * tile_size) // 2 + col * tile_size
+			correct_y = (screen_height - 3 * tile_size) // 2 + row * tile_size
 			image_rect = image.get_rect( topleft = (correct_x, correct_y) )
 			board_row.append( { 'image' : image, 'rect' : image_rect, 'symbol' : None } )
-	board_col.append( board_row )
-	return board_col
-
+		board.append( board_row )
+	return board
 
 def play() :
 	# 'size', 'tile_size' , 'margin_x', 'margin_y', 'line_width' }
+	current_player = "o"
+	image_resize ()
+	make_board()
+	while True :
+		mouse_pos = pygame.mouse.get_pos()
+		for row in Board :
+			for tile in row :
+				tile.check_click( mouse_pos )
+				tile.draw()
+
+		for event in pygame.event.get() :
+			if event.type == pygame.VIDEORESIZE :
+				# Update screen dimensions and recreate the screen surface
+				screen_width, screen_height = event.w, event.h
+				screen = pygame.display.set_mode( (screen_width, screen_height), pygame.RESIZABLE )
+				BG = pygame.Surface( (screen_width, screen_height) )
+				BG.fill( BG_color )
+
+				for row in Board :
+					for tile in row :
+						update_size( tile )
+
+			# if 1 == 0 :
+			if event.type == pygame.MOUSEBUTTONUP :
+				if player_ai.top_rect.collidepoint( event.pos ) :
+					play()
+				if player_p.top_rect.collidepoint( event.pos ) :
+					play()
+				if options_button.top_rect.collidepoint( event.pos ) :
+					options()
+				if quit_button.top_rect.collidepoint( event.pos ) :
+					pygame.quit()
+					exit()
+
+		pygame.display.update()
+
+"""
 	global screen_width , screen_height
 	board_info = board_values()
+	image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
+	board_big = make_board( image )
 	while True :
-		board_big = make_board( screen_width, screen_height )
 		for event in pygame.event.get() :
 			if event.type == pygame.QUIT :
 				pygame.quit()
@@ -197,7 +266,7 @@ def play() :
 			for tile in row :
 				screen.blit( tile[ 'image' ], tile[ 'rect' ] )
 		pygame.display.update()
-
+	""" # no class version
 
 def options() :
 	while True :
@@ -245,7 +314,7 @@ def menu() :
 		button_y = next_button( button_y )
 		quit_button = Button( "QUIT", button_w, button_h, (button_x, button_y), elevation )
 
-		menu_text = get_font( screen_width // 5 ).render( "TIK-TAK-TOE", False, Title_color )
+		menu_text = get_font( screen_width // 5 ).render( "TIC-TAC-TOE", False, Title_color )
 		menu_rect = menu_text.get_rect( center = (screen_width // 2, screen_height // 6) )
 		screen.blit( menu_text, menu_rect )
 
@@ -276,6 +345,4 @@ def menu() :
 					exit()
 
 		pygame.display.update()
-
-
 menu()

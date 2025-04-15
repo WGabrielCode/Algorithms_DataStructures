@@ -1,6 +1,5 @@
 import pygame
 from sys import exit
-from random import randint
 
 # initialize pygame
 pygame.init()
@@ -21,7 +20,6 @@ pallete = [ '#0d2b45',  # 0
             '#ffecd6'  # 7
             ]
 
-
 lines_color = pallete[ 0 ]
 X_color = pallete[ 4 ]
 O_color = pallete[ 6 ]
@@ -32,15 +30,9 @@ button_in_color = pallete[ 1 ]
 button_text_color = pallete[ 5 ]
 button_hover_color = pallete[ 2 ]
 
-
 # Background
 BG = pygame.Surface( (screen_width, screen_height) )
 BG.fill( BG_color )
-# Game
-board = [ ([ None ] * 3) for _ in range( 3 ) ]
-current_player = 'o'
-game_state = 'menu'
-winner = None
 
 # initialize screen
 screen = pygame.display.set_mode( (screen_width, screen_height), pygame.RESIZABLE )
@@ -51,72 +43,33 @@ def get_font( size ) :
 	return pygame.font.Font( 'files/Pixeltype.ttf', size )
 
 
-def board_values() :
-	# Calculate board placement to be centered in current window
-	global screen_width, screen_height
-	min_width, min_height = 300, 300
-	screen_width = max( screen_width, min_width )
-	screen_height = max( screen_height, min_height )
-	board_ratio = 0.8
-	board_size = min( screen_width, screen_height ) * board_ratio
-	tile_size = board_size // 3
-	margin_x = (screen_width - board_size)
-	margin_y = (screen_height - board_size)
-	return { 'size' : board_size, 'tile_size' : tile_size, 'margin_x' : margin_x, 'margin_y' : margin_y,
-	         'line_width' : max( 2, int( board_size * 0.02 ) ) }
-
-
 class Tile :
-	def __init__( self , symbol, x , y , size , X_image , O_image , tile_image ) :
-		# Core attributes
+	def __init__( self, symbol, x, y, size, tile_image, X_image, O_image ) :
+		self.tile_image = tile_image
 		self.x_image = X_image
 		self.o_image = O_image
-		self.rect = pygame.rect( x , y , ( size , size ) )
+		self.rect = pygame.Rect( x, y, size, size )
 		self.type = symbol
 		self.marked = False
 		self.left_x = x
 		self.top_y = y
 		self.size = size
 
-	""" 
-	def laod_tile( self ):
-		self.tile_image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
-		resize_tile()
-
-	def load_image( self ) :
-		if self.type == "x" :
-			self.symbol_image = pygame.image.load( "files/X_500px.png" ).convert_alpha()
-		else :
-			self.symbol_image = pygame.image.load( "files/O_500px.png" ).convert_alpha()
-		resize_image()
-	# if trans_factor != 1 :
-	#	image.set_alpha( 255 * trans_factor )
-
-	def resize_OX( self ) :
-		target_size = int( (self.rect.width) * self.scale )
-		self.image = pygame.transform.smoothscale( self.symbol_image, (target_size, target_size) )
-
-	def resize_tile( self ):
-		target_size =   (int( self.rect.width ) * self.scale  )
-		self.image = target.transform.smoothscale( self.symbol_image , ( target_size , target_size ) )
-
-	def combine( self , rect1 , rect2 ) :
-			rect1 = pygame.union
-	
-	def
-	"""
-	def check_click( self ):
-
-	def update_size( self ):
+	def check_click( self, mouse_pos ) :
+		if not self.marked and self.rect.collidepoint( mouse_pos ) and pygame.mouse.get_just_released()[ 0 ] :
+			return True
+		return False
 
 	def draw( self ) :
-		screen.blit( self.tile_image , self.rect  )
+		screen.blit( self.tile_image, self.rect )
 		if self.marked :
-			if self.type  == 'x' :
+			if self.type == 'x' :
 				image = self.x_image
-			elif self.type = 'o' :
+			elif self.type == 'o' :
 				image = self.o_image
-			screen.blit( image , self.rect )
+			else :
+				print( "error" )
+			screen.blit( image, self.rect )
 
 	""" 
 	def check_hover( self , transparency_factor ) :
@@ -133,6 +86,7 @@ class Tile :
 			self.marked = False
 		return False
 	"""
+
 
 # text , w , h , pos , elevation )
 class Button :
@@ -186,55 +140,84 @@ class Button :
 			self.pressed = False
 		return False
 
-def image_resize( image_a , image_b ,image_c , size ) :
-	global screen_width, screen_height
-	image_a = pygame.transform.smoothscale( image_a, ( size , size ) )
-	image_b = pygame.transform.smoothscale( image_b, (size, size) )
-	image_c = pygame.transform.smoothscale( image_c, (size, size) )
-	return image_a , image_b , image_c
 
-def make_board( image ) :
-	global screen_width , screen_height
+def image_resize( image_a, image_b, image_c, size ) :
+	global screen_width, screen_height
+
+
+	#image_a = pygame.transform.smoothscale( image_a, (size, size) ).convert_alpha()
+	image_a = pygame.transform.scale( image_a, (size, size) ).convert_alpha()
+	image_b = pygame.transform.scale( image_b, (size, size) ).convert_alpha()
+	image_c = pygame.transform.scale( image_c, (size, size) ).convert_alpha()
+	return image_a, image_b, image_c
+
+
+def make_board( tile_size, tile_image, x_image, o_image ) :
+	global screen_width, screen_height
 	margin = 20
-	tile_size = min( screen_height, screen_width ) // 3
-	image = pygame.transform.smoothscale( image, (tile_size, tile_size) )
-	board = []
+	board = [ ]
 	for row in range( 3 ) :
 		board_row = [ ]
 		for col in range( 3 ) :
 			correct_x = (screen_width - 3 * tile_size) // 2 + col * tile_size
 			correct_y = (screen_height - 3 * tile_size) // 2 + row * tile_size
-			image_rect = image.get_rect( topleft = (correct_x, correct_y) )
-			board_row.append( { 'image' : image, 'rect' : image_rect, 'symbol' : None } )
+			board_row.append( Tile( None, correct_x, correct_y, tile_size, tile_image, x_image, o_image ) )
 		board.append( board_row )
 	return board
 
+
 def play() :
 	# 'size', 'tile_size' , 'margin_x', 'margin_y', 'line_width' }
+	global screen_width, screen_height, BG_color, screen
+	screen.fill( BG_color )
 	current_player = "o"
-	image_resize ()
-	make_board()
+	tile_image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
+	X_image = pygame.image.load( 'files/X_500px.png' ).convert_alpha()
+	O_image = pygame.image.load( 'files/O_500px-1.png' ).convert_alpha()
+
+	tile_size = min( screen_height, screen_width ) // 3
+	tile_image, X_image, O_image = image_resize( tile_image, X_image, O_image, tile_size )
+	Board = make_board( tile_size, tile_image, X_image, O_image )
+
 	while True :
 		mouse_pos = pygame.mouse.get_pos()
-		for row in Board :
-			for tile in row :
-				tile.check_click( mouse_pos )
+		for i in range( 3 ) :
+			for j in range( 3 ) :
+				tile = Board[ i ][ j ]
+				if tile.check_click( mouse_pos ) :
+					tile.marked = True
+					tile.type = current_player
+					if current_player == 'x' :
+						current_player = 'o'
+					else :
+						current_player = 'x'
 				tile.draw()
 
 		for event in pygame.event.get() :
+
+			if event.type == pygame.QUIT :
+				pygame.quit()
+				exit()
+
 			if event.type == pygame.VIDEORESIZE :
 				# Update screen dimensions and recreate the screen surface
 				screen_width, screen_height = event.w, event.h
 				screen = pygame.display.set_mode( (screen_width, screen_height), pygame.RESIZABLE )
 				BG = pygame.Surface( (screen_width, screen_height) )
 				BG.fill( BG_color )
+				tile_size = min( screen_width, screen_height ) // 3
+				tile_image, X_image, O_image = image_resize( tile_image, X_image, O_image, tile_size )
+				for i in range( 3 ) :
+					for j in range( 3 ) :
+						tile = Board[ i ][ j ]
+						tile.tile_image = tile_image
+						tile.o_image = O_image
+						tile.x_image = X_image
+						tile.size = tile_size
+						tile.rect = pygame.Rect( tile.left_x, tile.top_y, tile_size, tile_size )
 
-				for row in Board :
-					for tile in row :
-						update_size( tile )
-
-			# if 1 == 0 :
-			if event.type == pygame.MOUSEBUTTONUP :
+			if 1 == 0 :
+				# if event.type == pygame.MOUSEBUTTONUP :
 				if player_ai.top_rect.collidepoint( event.pos ) :
 					play()
 				if player_p.top_rect.collidepoint( event.pos ) :
@@ -246,6 +229,7 @@ def play() :
 					exit()
 
 		pygame.display.update()
+
 
 """
 	global screen_width , screen_height
@@ -266,7 +250,8 @@ def play() :
 			for tile in row :
 				screen.blit( tile[ 'image' ], tile[ 'rect' ] )
 		pygame.display.update()
-	""" # no class version
+	"""  # no class version
+
 
 def options() :
 	while True :
@@ -326,6 +311,10 @@ def menu() :
 			button.draw()
 		# events
 		for event in pygame.event.get() :
+			if event.type == pygame.QUIT :
+				pygame.quit()
+				exit()
+
 			if event.type == pygame.VIDEORESIZE :
 				# Update screen dimensions and recreate the screen surface
 				screen_width, screen_height = event.w, event.h
@@ -345,4 +334,7 @@ def menu() :
 					exit()
 
 		pygame.display.update()
+
+
+# play()
 menu()

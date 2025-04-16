@@ -144,12 +144,82 @@ class Button :
 def image_resize( image_a, image_b, image_c, size ) :
 	global screen_width, screen_height
 
-
-	#image_a = pygame.transform.smoothscale( image_a, (size, size) ).convert_alpha()
+	# image_a = pygame.transform.smoothscale( image_a, (size, size) ).convert_alpha()
 	image_a = pygame.transform.scale( image_a, (size, size) ).convert_alpha()
 	image_b = pygame.transform.scale( image_b, (size, size) ).convert_alpha()
 	image_c = pygame.transform.scale( image_c, (size, size) ).convert_alpha()
 	return image_a, image_b, image_c
+
+
+def check_win( board, player ) :
+	# Check rows
+	for i in range( 3 ) :
+		for j in range( 3 ) :
+			if board[ i ][ j ].type != player :
+				break
+		else :
+			return True
+	# Check columns
+	for i in range( 3 ) :
+		for j in range( 3 ) :
+			if board[ j ][ i ].type != player :
+				break
+		else :
+			return True
+	# Check diagonals
+	if (board[ 0 ][ 0 ].type == board[ 1 ][ 1 ].type == board[ 2 ][ 2 ].type == player) or (
+			board[ 0 ][ 2 ].type == board[ 1 ][ 1 ].type == board[ 2 ][ 0 ].type == player) :
+		return True
+	return False
+
+
+def check_draw( Board, empty ) :
+	for i in range( 3 ) :
+		for j in range( 3 ) :
+			if Board[ i ][ j ].type == empty :
+				return False
+	return True
+
+
+def minimax( Board, symbol ) :
+	circle_ = 'x'
+	cross_ = 'o'
+	empty_ = None
+
+	if check_win_2d( Board, 1 ) : return 1, None
+	if check_win_2d( Board, 2 ) : return -1, None
+	if check_draw( Board ) : return 0, None
+
+	best_pair = (None, None)
+	if symbol == circle_ :  # dla kolka
+		best = -1
+		for i in range( 3 ) :
+			for j in range( 3 ) :
+				if Board[ i ][ j ].type == empty_ :
+					Board[ i ][ j ].type = symbol
+					score, _ = minimax( Board, cross_ )
+					Board[ i ][ j ].type = 0
+					if score > best :
+						best = score
+						if best == 1 :
+							return best, (i, j)
+						best_pair = (i, j)
+		return best, best_pair
+
+	if symbol == cross_ :
+		best = 3
+		for i in range( 3 ) :
+			for j in range( 3 ) :
+				if Board[ i ][ j ].type == empty_ :
+					Board[ i ][ j ].type = symbol
+					score, _ = minimax( Board, 1 )
+					Board[ i ][ j ].type = 0
+					if score < best :
+						best = score
+						if best == -1 :
+							return best, (i, j)
+						best_pair = (i, j)
+		return best, best_pair
 
 
 def make_board( tile_size, tile_image, x_image, o_image ) :
@@ -179,7 +249,8 @@ def play() :
 	tile_image, X_image, O_image = image_resize( tile_image, X_image, O_image, tile_size )
 	Board = make_board( tile_size, tile_image, X_image, O_image )
 
-	while True :
+	active = True
+	while active :
 		mouse_pos = pygame.mouse.get_pos()
 		for i in range( 3 ) :
 			for j in range( 3 ) :
@@ -187,10 +258,15 @@ def play() :
 				if tile.check_click( mouse_pos ) :
 					tile.marked = True
 					tile.type = current_player
+					if check_win( Board , current_player ) :
+						active = False
+					elif check_draw( Board , None ) :
+						active = False
 					if current_player == 'x' :
 						current_player = 'o'
 					else :
 						current_player = 'x'
+
 				tile.draw()
 
 		for event in pygame.event.get() :
@@ -230,33 +306,18 @@ def play() :
 
 		pygame.display.update()
 
+	while not active :
+		menu_text = get_font( screen_width // 5 ).render( f"PLAYER { current_player.upper() } WON ", False, Title_color )
+		menu_rect = menu_text.get_rect( center = (screen_width // 2, screen_height // 6) )
+		screen.blit( menu_text , menu_rect )
 
-"""
-	global screen_width , screen_height
-	board_info = board_values()
-	image = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
-	board_big = make_board( image )
-	while True :
-		for event in pygame.event.get() :
-			if event.type == pygame.QUIT :
-				pygame.quit()
-				return
-			if event.type == pygame.VIDEORESIZE :
-				screen_width, screen_height = event.w, event.h
-				board = make_board( screen_width, screen_height )
-		screen.fill( BG_color )
-		# Draw tiles
-		for row in board_big :
-			for tile in row :
-				screen.blit( tile[ 'image' ], tile[ 'rect' ] )
 		pygame.display.update()
-	"""  # no class version
 
 
 def options() :
 	while True :
 		options_mouse_pos = pygame.mouse.get_pos()  # po chuj mi to ?
-		screen.fill( pallete[ 1 ] )
+		screen.fill( BG_color )
 		options_text = get_font( 50 ).render( "this is the options screen", False, pallete[ 0 ] )
 		options_rect = options_text.get_rect( center = (screen_width // 2, screen_height // 2) )
 		screen.blit( options_text, options_rect )

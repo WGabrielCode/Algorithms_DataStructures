@@ -2,45 +2,65 @@ import pygame
 from sys import exit
 
 # initialize pygame
-pygame.init()
 
 # Deafault screen sizee
 screen_info = pygame.display.Info()
 screen_width = screen_info.current_w - 100
 screen_height = screen_info.current_h - 100
 
-# colors https://lospec.com/palette-list/slso8
-pallete = [ '#0d2b45',  # 0
-            '#203c56',  # 1
-            '#544e68',  # 2
-            '#8d697a',  # 3
-            '#d08159',  # 4
-            '#ffaa5e',  # 5
-            '#ffd4a3',  # 6
-            '#ffecd6'  # 7
-            ]
-
-lines_color = pallete[ 0 ]
-X_color = pallete[ 4 ]
-O_color = pallete[ 6 ]
-BG_color = pallete[ 0 ]
-Title_color = pallete[ 5 ]
-button_out_color = pallete[ 5 ]
-button_in_color = pallete[ 1 ]
-button_text_color = pallete[ 5 ]
-button_hover_color = pallete[ 2 ]
-
-# Background
 BG = pygame.Surface( (screen_width, screen_height) )
 BG.fill( BG_color )
 
-# initialize screen
-screen = pygame.display.set_mode( (screen_width, screen_height), pygame.RESIZABLE )
-pygame.display.set_caption( "Tic-Tac-Toe" )
 
+class GameConfigClass :
+	def __init__( self ) :
+		pygame.init()
+		self.pallete_list_inition()
+		self.colors_inition()
+		self.screen_inition()
+		self.load_images()
 
-def get_font( size ) :
-	return pygame.font.Font( 'files/Pixeltype.ttf', size )
+	def screen_inition( self ) :
+		screen_info = pygame.display.Info()
+		self.screen_width = max( screen_info.current_w - 100, 300 )
+		self.screen_height = max( screen_info.current_h - 100, 300 )
+		self.screen = pygame.display.set_mode( (self.screen_width, self.screen_height), pygame.RESIZABLE )
+		pygame.display.set_caption( "Tic-Tac-Toe" )
+
+	def load_images( self ) :
+		self.tile_img = pygame.image.load( 'files/frame_500px.png' ).convert_alpha()
+		self.x_img = pygame.image.load( 'files/X_500px.png' ).convert_alpha()
+		self.o_img = pygame.image.load( 'files/O_500px-1.png' ).convert_alpha()
+		self.horizontal_column_img = pygame.image.load( 'files/verrtical_column.png' ).convert_alpha()
+		self.oblique_column_lt_rb_img = pygame.image.load( 'files/oblique_column.png' ).convert_alpha()
+
+	def get_font( self, size ) :
+		return pygame.font.Font( 'files/Pixeltype.ttf', size )
+
+	def pallete_list_inition( self ) :  # colors https://lospec.com/palette-list/slso8
+		self.pallete = [ '#0d2b45',  # 0
+		                 '#203c56',  # 1
+		                 '#544e68',  # 2
+		                 '#8d697a',  # 3
+		                 '#d08159',  # 4
+		                 '#ffaa5e',  # 5
+		                 '#ffd4a3',  # 6
+		                 '#ffecd6'  # 7
+		                 ]
+
+	def colors_inition( self ) :
+		self.lines_color = self.pallete[ 0 ]
+		self.BG_color = self.pallete[ 0 ]
+		self.Title_color = self.pallete[ 5 ]
+		self.button_out_color = self.pallete[ 5 ]
+		self.button_in_color = self.pallete[ 1 ]
+		self.button_text_color = self.pallete[ 5 ]
+		self.button_hover_color = self.pallete[ 2 ]
+
+	def images_resize( self, size ) :
+		self.x_img = pygame.transform.scale( self.x_img, (size, size) ).convert_alpha()
+		self.o_img = pygame.transform.scale( self.o_img, (size, size) ).convert_alpha()
+		self.tile_img = pygame.transform.scale( self.tile_img, (size, size) ).convert_alpha()
 
 
 class Tile :
@@ -86,6 +106,96 @@ class Tile :
 			self.marked = False
 		return False
 	"""
+
+
+class BoardClass :
+	def __init__( self, config ) :
+		self.config = config
+		self.tile_size = min( config.screen_height, config.screen_width ) // 3
+		self.board_of_tiles = self.make_board()
+		self.board_size = 3
+		self.empty_tile = None
+
+	def make_board( self, config ) :
+		board = [ ]
+		for row in range( 3 ) :
+			board_row = [ ]
+			for col in range( 3 ) :
+				correct_x = (config.screen_width - 3 * self.tile_size) // 2 + col * self.tile_size
+				correct_y = (config.screen_height - 3 * self.tile_size) // 2 + row * self.tile_size
+				board_row.append(
+					Tile( None, correct_x, correct_y, self.tile_size, config.tile_img, config.x_img, config.o_img ) )
+			board.append( board_row )
+		return board
+
+	def check_win( self, player ) :
+		for i in range( self.board_size ) :
+			for j in range( self.board_size ) :
+				if self.board_of_tiles[ i ][ j ].type != player :
+					break
+			else :
+				return True
+		for i in range( self.board_size ) :
+			for j in range( self.board_size ) :
+				if self.board_of_tiles[ j ][ i ].type != player :
+					break
+			else :
+				return True
+		if (self.board_of_tiles[ 0 ][ 0 ].type == self.board_of_tiles[ 1 ][ 1 ].type == self.board_of_tiles[ 2 ][
+			2 ].type == player) or (
+				self.board_of_tiles[ 0 ][ 2 ].type == self.board_of_tiles[ 1 ][ 1 ].type == self.board_of_tiles[ 2 ][
+			0 ].type == player) :
+			return True
+		return False
+
+	def check_draw( self ) :
+		for i in range( 3 ) :
+			for j in range( 3 ) :
+				if self.board_of_tiles[ i ][ j ].type == self.empty_tile :
+					return False
+		return True
+
+	"""
+	def minimax( Board, symbol ) :
+		circle_ = 'x'
+		cross_ = 'o'
+		empty_ = None
+
+		if check_win_2d( Board, 1 ) : return 1, None
+		if check_win_2d( Board, 2 ) : return -1, None
+		if check_draw( Board ) : return 0, None
+
+		best_pair = (None, None)
+		if symbol == circle_ :  # dla kolka
+			best = -1
+			for i in range( 3 ) :
+				for j in range( 3 ) :
+					if Board[ i ][ j ].type == empty_ :
+						Board[ i ][ j ].type = symbol
+						score, _ = minimax( Board, cross_ )
+						Board[ i ][ j ].type = 0
+						if score > best :
+							best = score
+							if best == 1 :
+								return best, (i, j)
+							best_pair = (i, j)
+			return best, best_pair
+	
+		if symbol == cross_ :
+			best = 3
+			for i in range( 3 ) :
+				for j in range( 3 ) :
+					if Board[ i ][ j ].type == empty_ :
+						Board[ i ][ j ].type = symbol
+						score, _ = minimax( Board, 1 )
+						Board[ i ][ j ].type = 0
+						if score < best :
+							best = score
+							if best == -1 :
+								return best, (i, j)
+							best_pair = (i, j)
+			return best, best_pair
+"""  # minimax
 
 
 # text , w , h , pos , elevation )
@@ -141,101 +251,6 @@ class Button :
 		return False
 
 
-def image_resize( image_a, image_b, image_c, size ) :
-	global screen_width, screen_height
-
-	# image_a = pygame.transform.smoothscale( image_a, (size, size) ).convert_alpha()
-	image_a = pygame.transform.scale( image_a, (size, size) ).convert_alpha()
-	image_b = pygame.transform.scale( image_b, (size, size) ).convert_alpha()
-	image_c = pygame.transform.scale( image_c, (size, size) ).convert_alpha()
-	return image_a, image_b, image_c
-
-
-def check_win( board, player ) :
-	# Check rows
-	for i in range( 3 ) :
-		for j in range( 3 ) :
-			if board[ i ][ j ].type != player :
-				break
-		else :
-			return True
-	# Check columns
-	for i in range( 3 ) :
-		for j in range( 3 ) :
-			if board[ j ][ i ].type != player :
-				break
-		else :
-			return True
-	# Check diagonals
-	if (board[ 0 ][ 0 ].type == board[ 1 ][ 1 ].type == board[ 2 ][ 2 ].type == player) or (
-			board[ 0 ][ 2 ].type == board[ 1 ][ 1 ].type == board[ 2 ][ 0 ].type == player) :
-		return True
-	return False
-
-
-def check_draw( Board, empty ) :
-	for i in range( 3 ) :
-		for j in range( 3 ) :
-			if Board[ i ][ j ].type == empty :
-				return False
-	return True
-
-
-def minimax( Board, symbol ) :
-	circle_ = 'x'
-	cross_ = 'o'
-	empty_ = None
-
-	if check_win_2d( Board, 1 ) : return 1, None
-	if check_win_2d( Board, 2 ) : return -1, None
-	if check_draw( Board ) : return 0, None
-
-	best_pair = (None, None)
-	if symbol == circle_ :  # dla kolka
-		best = -1
-		for i in range( 3 ) :
-			for j in range( 3 ) :
-				if Board[ i ][ j ].type == empty_ :
-					Board[ i ][ j ].type = symbol
-					score, _ = minimax( Board, cross_ )
-					Board[ i ][ j ].type = 0
-					if score > best :
-						best = score
-						if best == 1 :
-							return best, (i, j)
-						best_pair = (i, j)
-		return best, best_pair
-
-	if symbol == cross_ :
-		best = 3
-		for i in range( 3 ) :
-			for j in range( 3 ) :
-				if Board[ i ][ j ].type == empty_ :
-					Board[ i ][ j ].type = symbol
-					score, _ = minimax( Board, 1 )
-					Board[ i ][ j ].type = 0
-					if score < best :
-						best = score
-						if best == -1 :
-							return best, (i, j)
-						best_pair = (i, j)
-		return best, best_pair
-
-
-def make_board( tile_size, tile_image, x_image, o_image ) :
-	global screen_width, screen_height
-	margin = 20
-	board = [ ]
-	for row in range( 3 ) :
-		board_row = [ ]
-		for col in range( 3 ) :
-			correct_x = (screen_width - 3 * tile_size) // 2 + col * tile_size
-			correct_y = (screen_height - 3 * tile_size) // 2 + row * tile_size
-			board_row.append( Tile( None, correct_x, correct_y, tile_size, tile_image, x_image, o_image ) )
-		board.append( board_row )
-	return board
-
-
 def play() :
 	# 'size', 'tile_size' , 'margin_x', 'margin_y', 'line_width' }
 	global screen_width, screen_height, BG_color, screen
@@ -258,9 +273,9 @@ def play() :
 				if tile.check_click( mouse_pos ) :
 					tile.marked = True
 					tile.type = current_player
-					if check_win( Board , current_player ) :
+					if check_win( Board, current_player ) :
 						active = False
-					elif check_draw( Board , None ) :
+					elif check_draw( Board, None ) :
 						active = False
 					if current_player == 'x' :
 						current_player = 'o'
@@ -307,9 +322,9 @@ def play() :
 		pygame.display.update()
 
 	while not active :
-		menu_text = get_font( screen_width // 5 ).render( f"PLAYER { current_player.upper() } WON ", False, Title_color )
+		menu_text = get_font( screen_width // 5 ).render( f"PLAYER {current_player.upper()} WON ", False, Title_color )
 		menu_rect = menu_text.get_rect( center = (screen_width // 2, screen_height // 6) )
-		screen.blit( menu_text , menu_rect )
+		screen.blit( menu_text, menu_rect )
 
 		pygame.display.update()
 
@@ -395,6 +410,7 @@ def menu() :
 					exit()
 
 		pygame.display.update()
+
 
 # play()
 menu()

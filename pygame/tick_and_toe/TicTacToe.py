@@ -383,16 +383,28 @@ def menu() :
 				BG = pygame.Surface( (screen_width, screen_height) )
 				BG.fill( BG_color )
 			# if 1 == 0 :
-			if event.type == pygame.MOUSEBUTTONUP :
-				if player_ai.top_rect.collidepoint( event.pos ) :
-					play()
-				if player_p.top_rect.collidepoint( event.pos ) :
-					play()
-				if options_button.top_rect.collidepoint( event.pos ) :
-					options()
-				if quit_button.top_rect.collidepoint( event.pos ) :
+			for event in pygame.event.get() :
+				if event.type == pygame.QUIT :
 					pygame.quit()
 					exit()
+
+				if event.type == pygame.VIDEORESIZE :
+					# Update screen dimensions and recreate the screen surface
+					screen_width, screen_height = event.w, event.h
+					screen = pygame.display.set_mode( (screen_width, screen_height), pygame.RESIZABLE )
+					BG = pygame.Surface( (screen_width, screen_height) )
+					BG.fill( BG_color )
+				# if 1 == 0 :
+				if event.type == pygame.MOUSEBUTTONUP :
+					if player_ai.top_rect.collidepoint( event.pos ) :
+						play()
+					if player_p.top_rect.collidepoint( event.pos ) :
+						play()
+					if options_button.top_rect.collidepoint( event.pos ) :
+						options()
+					if quit_button.top_rect.collidepoint( event.pos ) :
+						pygame.quit()
+						exit()
 
 		pygame.display.update()
 

@@ -5,7 +5,7 @@ class UnionFind :
 		self.rank = 0
 
 def find( x ):
-	if x.parent != self :
+	if x.parent != x :
 		x.parent = find( x.parent)
 	return x
 

@@ -1,3 +1,5 @@
+#kolos 2024/24
+
 from queue import PriorityQueue
 
 def warrior( G, s, t ) :
@@ -43,7 +45,7 @@ def warrior( G, s, t ) :
 				d[v] = d[u] + cost + sleep_cost
 				pq.put( (d[v] , v ) )
 
-	return d
+	return d[t]
 
 G = [ (1, 5, 10), (4, 6, 12), (3, 2, 8),
       (2, 4, 4), (2, 0, 10), (1, 4, 5),

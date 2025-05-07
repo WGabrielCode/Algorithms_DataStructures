@@ -1,4 +1,23 @@
 from queue import Queue
+from collections import deque
+def BFS_de( G , s ) :
+	n = len( G )
+	inf = float( "inf" )
+	d = [inf] * n
+	d[s] = 0
+	visited = [False] * n
+	visited[s] = True
+	q = deque()
+	q.append( s )
+
+	while q :
+		u = q.popleft()
+		for v in G[u] :
+			if not visited[v] :
+				d[v] = d[u] + 1
+				visited[v] = True
+				q.append( v )
+	return d
 
 def BFS ( G , s ) :
 	q = Queue()
@@ -22,5 +41,7 @@ def BFS ( G , s ) :
 G = [ [ 0 ,1 ,2 ] ,
       [ 1 , 0 ],
       [ 2 , 0 ]  ]
-print( BFS( G ,2 ) )
+s = 2
+print( BFS( G ,s ) )
 
+print( BFS_de( G , s ) )

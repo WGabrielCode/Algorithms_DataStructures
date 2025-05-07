@@ -36,7 +36,9 @@ def find_components( G ) :
 	G = reverse_e()
 	res_all = []
 	visited = [False] * n
+	print( time_arr )
 	for time , v in sorted( time_arr , key =lambda x: x[0] , reverse = True ) :
+		print( time , v )
 		if not visited[v] :
 			res = []
 			dfs_rev( v )
@@ -58,4 +60,4 @@ G2 = [
     [3],
     [6]
 ]
-print( find_components( G2 ) )
+print( find_components( G ) )

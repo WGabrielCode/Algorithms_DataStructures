@@ -7,7 +7,6 @@ def find( x ) :
 	if x.parent != x :
 		x.parent = find( x.parent )
 	return x.parent
-
 def union( x , y ) :
 	x = find( x )
 	y = find( y )

@@ -19,6 +19,28 @@ def dijkstra2( G , start ) :
 				d[v] = d[u] + cost
 				pq.put( (d[v] , v) )
 	print( parent , d)
+
+def dijkstra_test( G , start ) :
+	n = len( G )
+	inf = float( "inf" )
+	d = [inf] * n
+	d[start] = 0
+
+	pq = PriorityQueue()
+	pq.put( ( 0 , start ))
+	while not pq.empty() :
+		dist , u = pq.get()
+
+		if dist > d[u] :
+			continue
+
+		for v , cost in G[u] :
+
+			if d[v] > d[u] + cost :
+				d[v] = d[u] + cost
+				pq.put( (d[v] , v ) )
+	return d
+
 G = [
     [(1, 5), (2, 2)],
     [(3, 1)],
@@ -27,4 +49,5 @@ G = [
 ]
 
 s = 0
+print( dijkstra_test( G , s ) )
 dijkstra2(G, s)

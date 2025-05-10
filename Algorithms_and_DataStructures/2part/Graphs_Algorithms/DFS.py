@@ -13,7 +13,9 @@ def DFS( G ) :
 	n = len( G )
 	visited = [False] * n
 	time = 0
-
+	#for u in range( n ) :
+	#	if not visited[u] :
+	#		visit( G , u )
 	for i in range( n ) :
 		v = G[i][0]
 		for u in G[v] :

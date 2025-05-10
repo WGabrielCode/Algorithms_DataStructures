@@ -2,7 +2,6 @@ from zadtesty import runtests
 
 def goodknight( G, s, t ) :
 	from queue import PriorityQueue
-
 	def M_to_adj() :
 		n = len( G )
 		A = [ [ ] for i in range( n ) ]
@@ -20,7 +19,7 @@ def goodknight( G, s, t ) :
 	d[ s ] = 0
 	no_sleep = [ 0 ] * n
 	pq = PriorityQueue()
-	pq.put( (0, s) )
+	pq.put( (0, s , d ) )
 	while not pq.empty() :
 		dist, u = pq.get()
 		for cost, v in G[ u ] :

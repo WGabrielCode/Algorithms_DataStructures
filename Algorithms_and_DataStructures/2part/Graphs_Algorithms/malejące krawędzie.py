@@ -23,6 +23,7 @@ def dijkstra2( G, start, stop ) :
 	print( parent, d )
 
 
+
 G = [ [ (1, 5), (2, 4) ], [ (3, 1) ], [ (1, 1), (3, 7) ], [ ] ]
 
 s = 0

@@ -1,7 +1,7 @@
 
 def sub_sum( A , s ) :
 	n = len( A )
-	dp = [ [False for i in range( s+1 ) ] for i in range( n ) ]
+	dp = [ [False for _ in range( s+1 ) ] for _ in range( n ) ]
 	dp[0][0] = dp[0][ A[0] ] = True
 
 	for i in range( 1 , n ) :
@@ -17,5 +17,5 @@ def sub_sum( A , s ) :
 						dp[i][j] = True
 	return dp[n-1][s]
 A = [3,5,7]
-s = 15
+s = 8
 print( sub_sum( A , s ) )

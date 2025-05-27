@@ -27,4 +27,6 @@ def lis( A ) :
 	return len( res )
 
 A = [1,7,8,4,5,6,-1,9]
+B = [ 2,7,6,4,2,24,-10]
 print( lis( A ) )
+print( lis( B ) )

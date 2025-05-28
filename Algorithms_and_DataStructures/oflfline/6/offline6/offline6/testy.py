@@ -6,11 +6,11 @@ import sys
 sys.setrecursionlimit(10000)
 
 TIMER = False
-RERAISE = True
-PRINT_STATUS = False
+RERAISE = False
+PRINT_STATUS = True
 USE_STORED_TESTS = False
 SAVE_TESTS = False
-FORCE_ALL_TESTS = False
+FORCE_ALL_TESTS = True
 
 
 if TIMER:
@@ -27,7 +27,7 @@ if USE_STORED_TESTS:
 
 def print_err(*a):
      print(*a, file = sys.stderr)
-
+ 
 
 MY_seed    = 42
 MY_a       = 134775813
@@ -52,27 +52,24 @@ def list2str( L ):
   for x in L:
     s += str(x) +", "
   s = s.strip()
-  if len(s) > 0:
+  if len(s) > 0: 
     s = s[:-1]
   return s
 
 def limit( L, lim=120 ):
-#  if type(L) == list:
-#    if len(L) > lim:
-#      return "[za dlugie]"
   x = str( L )
   if len(x) < lim:
     return x
   else:
     return x[:lim]+"[za dlugie]..."
 
-
-
+    
+    
 class TimeOut(Exception):
   def __init__(self):
     pass
-
-
+    
+    
 def timeout_handler( signum, frame ):
    raise TimeOut()
 
@@ -116,10 +113,10 @@ def internal_runtests( copyarg, printarg, printhint, printsol, check, generate_t
         signal( SIGALRM, timeout_handler )
         alarm( ACC_TIME + 1)
       time_s = time.time()
-      end    = time.time()
+      end    = time.time() 
       sol    = f( *arg )
       time_e = time.time()
-
+      
       if TIMER:
         alarm(0)
       printsol( sol )
@@ -137,7 +134,7 @@ def internal_runtests( copyarg, printarg, printhint, printsol, check, generate_t
         status_line += ' W'
         print("TEST NIEZALICZONY!!!")
       print("Orientacyjny czas: %.2f sek." % float(time_e-time_s))
-
+        
       total_time += float(time_e-time_s)
     except TimeOut:
       timeout += 1
@@ -152,8 +149,8 @@ def internal_runtests( copyarg, printarg, printhint, printsol, check, generate_t
       status_line += ' E'
       print("WYJATEK:", e)
       if RERAISE: raise e
-
-
+    
+    
   print("-----------------")
   print("Liczba zaliczonych testów: %d/%d" % (passed,total) )
   print("Liczba testów z przekroczonym czasem: %d/%d" % (timeout,total) )

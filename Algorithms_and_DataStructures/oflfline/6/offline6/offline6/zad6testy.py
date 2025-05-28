@@ -1,41 +1,48 @@
-# kol1testy.py
+# zad6testy.py
 from testy import *
-from kol1test_spec import ALLOWED_TIME, TEST_SPEC, gentest
+from zad6test_spec import ALLOWED_TIME, TEST_SPEC, gentest
 
 from copy import deepcopy
 
 
 def copyarg( arg ):
-    return arg #deepcopy(arg)
+    return deepcopy(arg)
 
 
-def printarg( M, D, T ):
-    print("Dlugosc ogrodzenia     : ", M)
-    print("Szerokosc dla kombajnu : ", D)
-    print("Lokalizacje palikow    : ", limit(T))
+def printarg( X,Y ):
+    print("Liczba biurowcow : ", len(X))
+    print("Liczba dzialek   : ", len(Y))
+    print("Pozycje biurowcow: ", limit(X))
+    print("Pozycje dzialek  : ", limit(Y))
 
 
 def printhint( hint ):
-    print("Wynik poprawny       : ", hint)
+    print("Prawidlowy wynik : ", hint)
 
 
 def printsol( sol ):
-    print("Wynik algorytmu     : ", sol)
+    print("Wynik algorytmu  : ", sol)
 
 
-def check( M, D, T, hint, sol ):
-    return hint == sol
+def check( X,Y, hint, sol ):
+    good = True
 
+    if hint != sol:
+        print("Błąd! Nieprawidlowy wynik algorytmu.")
+        good = False
+
+    return good
+
+ 
 def generate_tests(num_tests = None):
     global TEST_SPEC
     TESTS = []
-
-    M = 10
-    D = 0.9
-    T = [3.55, 7.12, 1.3, 0.6]
-    hint = 2
+ 
+    X = [3,6,10,14]
+    Y = [1,4,5,10,11,13,17]
+    hint = 3
     newtest = {}
-    newtest["arg"] = [M, D, T]
+    newtest["arg"] = [X,Y]
     newtest["hint"] = hint
     TESTS.append(newtest)
 
@@ -48,7 +55,7 @@ def generate_tests(num_tests = None):
         newtest["arg"] = arg
         newtest["hint"] = hint
         TESTS.append(newtest)
-
+        
     return TESTS
 
 

@@ -7,7 +7,7 @@ def wm( T , M ) :
 	for i in range( n ) :
 		for m in M :
 			if i - m >= 0 :
-				if dp[i] > dp[i-m] + 1
+				if dp[i] > dp[i-m] + 1 :
 					dp[i] = dp[i-m] + 1
 	return dp[T]
 def rec_wm( T , M ) :

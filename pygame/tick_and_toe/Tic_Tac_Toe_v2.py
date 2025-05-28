@@ -259,6 +259,7 @@ class Button :
 		return False
 
 
+
 def main_game() :
 	# Initialize game configuration
 	config = GameConfigClass()

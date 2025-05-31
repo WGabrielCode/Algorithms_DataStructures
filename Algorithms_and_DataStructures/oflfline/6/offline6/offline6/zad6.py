@@ -21,7 +21,7 @@ def parking(X,Y):
         if j == i :
           dp[ i ][ j ] = dp[ i - 1 ][ j - 1 ] + R( i, j )
         else :
-          dp[ i ][ j ] = min( dp[ i - 1 ][ j ] + R( i, j ), dp[ i ][ j - 1 ] )
+          dp[ i ][ j ] = min( dp[ i - 1 ][ j-1 ] + R( i, j ), dp[ i ][ j - 1 ] )
 
 
     return dp[ n - 1 ][ m - 1 ]

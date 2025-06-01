@@ -13,6 +13,23 @@ def FibbVar( n ) :
 		a , b = b , a + b
 	return b
 
+def fib_mem( n ) :
+
+	memo = {}
+
+	def in_fib( n ) :
+		if n <= 1 :
+			memo[n] = 1
+			return 1
+		if n in memo :
+			return memo[n]
+
+		memo[n] = in_fib( n-1) + in_fib( n-2 )
+		return memo[n]
+
+	return in_fib( n-1 )
+
 n = 7
+print( fib_mem( n) )
 print( FibbVar( n ) )
 print( Fibb_List( n ) )

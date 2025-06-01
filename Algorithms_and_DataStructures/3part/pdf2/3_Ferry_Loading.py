@@ -5,12 +5,24 @@
 # wynik zadania to argmax f( L,L,k) = True, k e {0,1....,n}
 
 def ferry( A , L ) :
-	mem = {}
-	def f( left , right , k ) :
+	memo = {}
+	def f( l , p , k ) :
+		if (l,p,k) in memo :
+			return memo[ (l,p,k) ]
 		if k == 0  :
 			return True
 
-		if left
+		result = False
+		if l  >= A[k-1] :
+			result = result or f( l - A[k-1] , p , k-1 )
+		if p >= A[k-1] :
+			result = result or f(l,p-A[k-1] , k-1 )
+
+		memo[ (l,p,k) ] = result
+		return result
+	for k in range( len( A ) , -1 , -1 ) :
+		if f(L,L,k) :
+			return k
 
 def fl( A, L ) :
 	mem = {}
@@ -72,4 +84,5 @@ def prom_iteracyjnie( A, L ) :
 L = 7
 A =[ 2,5,3,1,1]
 A1 = [ 5,2,5,2]
+print( ferry( A1 , L ) )
 print( fl( A1 , L ) )

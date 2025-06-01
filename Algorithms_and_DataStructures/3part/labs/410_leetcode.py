@@ -18,6 +18,22 @@ def lc( A , k ) :
 		mem[ (j,k) ] = result
 		return result
 
+def lc_2( A , k) :
+
+	memo = {}
+	def f( i , parts ) :
+		if (i,parts) in memo :
+			return memo[ (i,parts) ]
+
+		if parts == 1 :
+			memo[ (i,parts) ] = sum( A[:i+1] )
+			return memo[ ( i,parts) ]
+
+		for j in range( parts-1 , i + 1 ) :
+			return  f( i-1 , parts-1 ) , sum( A[j:i])
+
+	return f( len( A )-1 , k )
+
 A = [10,12,7,17,19,5,11,7]
 k = 3
 print( lc( A , k ) )

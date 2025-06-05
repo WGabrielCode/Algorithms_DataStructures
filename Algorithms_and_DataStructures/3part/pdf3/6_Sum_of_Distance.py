@@ -1,0 +1,2 @@
+# szukamy mediany zbioru
+

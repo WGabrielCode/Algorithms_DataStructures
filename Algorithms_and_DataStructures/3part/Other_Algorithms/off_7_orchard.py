@@ -151,7 +151,6 @@ def orchard4( T , m ) :
 
 	return res
 
-
 def orchard5( T , m ) :
 
 	S = sum( T )
@@ -189,17 +188,42 @@ def orchard5( T , m ) :
 
 	return res
 
+def orchard6( T , m ) :
+
+	n = len( T )
+	S = sum( T )
+
+	inf = float("inf" )
+	dp = [ [ inf ] * m for _ in range( n + 1 ) ]
+	dp[ 0 ][ 0 ] = 0
+
+	for i in range( 1, n + 1 ) :
+		a = T[ i - 1 ]
+		for r in range( m ) :
+			dp[ i ][ r ] = min( dp[ i ][ r ], dp[ i - 1 ][ r ] )
+
+			if r >= a % m :
+				dp[ i ][ r ] = min( dp[ i ][ r ], dp[ i - 1 ][ r - a%m ] + 1 )
+
+	for i in range( n+1 ) :
+		print( dp[i]  , "\n" )
+
+	return dp[ n ][ S % m ]
+
+"""
 # 0 1 2 3 4 5 6
 T = [2, 2, 7, 5, 1, 14, 7]
 m = 7
 # 2
-"""
+
 T = [2,7,5,3,1]
 m = 10
 
 T = [7,5,3,2]
 m = 15
 """
-print( orchard5( T , m ) )
+T = [1,2,3]
+m = 4
+print( orchard6( T , m ) )
 
 #print( orchard2( T , m ) )

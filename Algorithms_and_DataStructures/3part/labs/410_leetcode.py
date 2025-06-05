@@ -1,24 +1,13 @@
 #lista na k przedzialow gdzie sume najiwekszego minimalizujemy
 
-def lc( A , k ) :
+def lc_2( nums, k ) :
 
-	mem = {}
+	n = len( nums )
+	pre_sum = [0] * n
+	pre_sum[0] = nums[0]
 
-	def f( j,k ) :
-		if (j,k) in mem :
-			return mem[(j,k)]
-		if k == 1 :
-			return sum[ A[:j+1] ]
-		if j+1<k :
-			return -1
-		result = -1
-		for l in range( 0, j+1 ) :
-			temp = min( f(l,k-1) ,A(l+1,j+1) )
-			result = max( result , temp )
-		mem[ (j,k) ] = result
-		return result
-
-def lc_2( A , k) :
+	for i in range( 1 , n ) :
+		pre_sum[i] = pre_sum[i-1] + nums[i]
 
 	memo = {}
 	def f( i , parts ) :
@@ -26,14 +15,19 @@ def lc_2( A , k) :
 			return memo[ (i,parts) ]
 
 		if parts == 1 :
-			memo[ (i,parts) ] = sum( A[:i+1] )
+			memo[ (i,parts) ] = pre_sum[i]  # sum ( nums[ :i + 1 ] )
 			return memo[ ( i,parts) ]
 
+		result = float("inf")
 		for j in range( parts-1 , i + 1 ) :
-			return  f( i-1 , parts-1 ) , sum( A[j:i])
-
-	return f( len( A )-1 , k )
+			tmp = max( f( j-1 , parts-1 ),  pre_sum[i] - pre_sum[j-1] ) #sum(  nums[ j :i + 1 ] ) )
+			result = min( result ,  tmp)
+		memo[ (i,parts) ] = result
+		print( memo )
+		return result
+	return f( len( nums ) - 1, k )
 
 A = [10,12,7,17,19,5,11,7]
-k = 3
-print( lc( A , k ) )
+B = [1,2,3,4,5]
+k = 2
+print( lc_2( B , k ) )

@@ -14,7 +14,6 @@ def petrol_cnt( stations , gas , destination_idx ) :
 			return -1
 		cnt += 1
 		idx = res_idx
-
 	return cnt
 
 

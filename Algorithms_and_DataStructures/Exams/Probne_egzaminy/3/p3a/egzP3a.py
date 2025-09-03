@@ -1,6 +1,7 @@
 from egzP3atesty import runtests
 from math import inf
 
+# O( n*m*p  ) 0.53 sek.
 class Node:
   def __init__(self, wyborcy, koszt, fundusze):
     self.next = None
@@ -12,28 +13,26 @@ class Node:
 def wybory(T):
     from collections import deque
     result = 0
-    for i in range( len( T) ) :
+    for i in range( len( T ) ) :
         res = 0
         memo = { 0 : 0 }
-        while T[i].x == None :
-            val , cost , maximum = T[i].wyborcy , T[i].koszt , T[i].fundusze
-            #print( sorted( list( memo.keys() ) ) )
-            arr = sorted( list( memo.keys() ) )
-            for idx in arr :
-                #a = idx + cost
+
+        while T[i] is not None : # n
+            val , cost , maximum = T[i].wyborcy , T[i].koszt , T[i].fundusze # p
+            new_memo = memo.copy()
+            for idx in memo.keys() :
                 if idx + cost <= maximum :
                     key = idx + cost
-                    if key in memo :
-                        memo[key] = max( memo[key] , memo[idx] + val )
+                    new_val = memo[idx] + val
+                    if key in new_memo :
+                        new_memo[key] = max( new_memo[key] , new_val )
                     else :
-                        memo[key] = memo[idx] + val
-                    res = max( res , memo[key] )
-            if not T[i].next :
-                T[i].x = True
-            else :
-                T[i] = T[i].next
-        print( res )
-        result += res
+                        new_memo[key] = new_val
+            memo = new_memo
+            T[i] = T[i].next # m
+
+        if memo :
+            result += max( memo.values() )
     return result
 
 wyb1okr1 = Node(3, 8, 15)
@@ -51,4 +50,4 @@ wyb3okr1.next = wyb3okr2
 T = [wyb1okr1, wyb2okr1, wyb3okr1]
 print( wybory( T ) )
 
-#runtests(wybory, all_tests = True)
+runtests(wybory, all_tests = True )

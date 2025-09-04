@@ -30,7 +30,6 @@ def wybory(T):
                         new_memo[key] = new_val
             memo = new_memo
             T[i] = T[i].next # m
-
         if memo :
             result += max( memo.values() )
     return result

@@ -1,0 +1,37 @@
+from copy import deepcopy
+
+def find_euler_circuit( G ) :
+    def check( n ) :
+        for v in range( n ) :
+            c = 0
+            for u in G[v] :
+                c += 1
+            if c % 2 != 0 :
+                return False
+        return True
+
+    def dfs( u ) :
+        for v in Gcopy[ u ] :
+            G[v].remove( u )
+            G[u].remove( v )
+            dfs( v )
+       # finished[ u ] = True
+        res.append( u )
+
+    n = len( G )
+    if not check( n ) : return False
+    start = 0
+    Gcopy = deepcopy( G )
+    finished = [ False for i in range( n ) ]
+    res = []
+    dfs( start )
+    return res
+
+G = [
+    [1, 2],     # 0 → 1, 0 → 2
+    [0, 2],      # 1 → 0, 1 → 2
+    [0, 1, 3, 4],# 2 → 0, 2 → 1, 2 → 3, 2 → 4
+    [2, 4],      # 3 → 2, 3 → 4
+    [2, 3]# 4 → 2, 4 → 3
+]
+print( find_euler_circuit( G ) )
